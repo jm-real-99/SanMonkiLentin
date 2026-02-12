@@ -1,0 +1,361 @@
+:root{
+  /* progreso general 0..1 */
+  --p: 0;
+
+  /* apertura del sobre */
+  --flapAngle: 0deg;     /* 0 -> -180deg */
+  --envLift: 0px;        /* pequeño “lift” */
+  --envOpacity: 1;       /* 1 -> 0 al final */
+  --envScale: 1;
+
+  /* carta final */
+  --letterOpacity: 0;    /* 0 -> 1 */
+  --letterY: 28px;       /* 28 -> 0 */
+  --letterBlur: 6px;     /* 6 -> 0 */
+  --hintOpacity: 1;      /* 1 -> 0 */
+
+  /* collage */
+  --collageOpacity: 0;   /* 0 -> 1 */
+}
+
+*{ box-sizing: border-box; }
+html, body{ height: 100%; }
+body{
+  margin: 0;
+  font-family: Inter, system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif;
+  color: #2b2b2b;
+  overflow-x: hidden;
+
+  /* Fondo default (degradado “chulito”) */
+  background:
+    radial-gradient(20px 20px at 20% 15%, rgba(255,255,255,.55) 0 40%, transparent 41%),
+    radial-gradient(22px 22px at 70% 30%, rgba(255,255,255,.45) 0 40%, transparent 41%),
+    radial-gradient(18px 18px at 40% 75%, rgba(255,255,255,.40) 0 40%, transparent 41%),
+    linear-gradient(135deg, #ffd6e8 0%, #cfe9ff 50%, #d7ffe9 100%);
+  background-attachment: fixed;
+}
+
+/* Cuando la carta aparece -> cambiamos a foto */
+body.photoBg{
+  background:
+    linear-gradient(135deg, rgba(0,0,0,.22), rgba(0,0,0,.10)),
+    url("bg.jpg");
+  background-size: cover;
+  background-position: center;
+  background-attachment: fixed;
+}
+
+.scene{
+  min-height: 280vh; /* más recorrido */
+  position: relative;
+  padding: 24px 16px 80px;
+}
+
+.hint{
+  position: fixed;
+  left: 50%;
+  top: 18px;
+  transform: translateX(-50%);
+  padding: 10px 14px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.55);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 10px 30px rgba(0,0,0,.08);
+  font-weight: 600;
+  opacity: var(--hintOpacity);
+  transition: opacity .2s linear;
+  z-index: 50;
+}
+
+/* zona sticky para el sobre */
+.sticky{
+  position: sticky;
+  top: 10vh;
+  height: 80vh;
+  display: grid;
+  place-items: center;
+}
+
+.stage{
+  width: min(560px, 92vw);
+  display: grid;
+  place-items: center;
+}
+
+.envelopeWrap{
+  opacity: var(--envOpacity);
+  transform: translateY(var(--envLift)) scale(var(--envScale));
+  transition: opacity .10s linear;
+  will-change: transform, opacity;
+}
+
+.envelope{
+  width: min(420px, 88vw);
+  height: calc(min(420px, 88vw) * 0.62);
+  position: relative;
+  border-radius: 18px;
+  filter: drop-shadow(0 18px 34px rgba(0,0,0,.16));
+  transform: translateZ(0);
+
+  /* base rosa del sobre */
+  background:
+    linear-gradient(180deg, #ffb7cc 0%, #ff9fbc 55%, #ff8fb0 100%);
+  overflow: hidden;
+  box-shadow: inset 0 0 0 1px rgba(255,255,255,.35);
+}
+
+/* Forro interior (ligero patrón) */
+.liner{
+  position: absolute;
+  inset: 10px;
+  border-radius: 14px;
+  background:
+    radial-gradient(10px 10px at 20% 30%, rgba(255,255,255,.18) 0 35%, transparent 36%),
+    radial-gradient(12px 12px at 70% 55%, rgba(255,255,255,.14) 0 35%, transparent 36%),
+    linear-gradient(135deg, rgba(255,255,255,.18), rgba(255,255,255,.06));
+  opacity: .55;
+  z-index: 1;
+}
+
+/* Pliegues (3 triángulos) */
+.fold{
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+}
+
+/* Triángulo inferior */
+.fold-bottom{
+  clip-path: polygon(0 100%, 50% 52%, 100% 100%);
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.06), rgba(0,0,0,.12));
+  mix-blend-mode: multiply;
+}
+
+/* Triángulo izquierdo */
+.fold-left{
+  clip-path: polygon(0 22%, 50% 60%, 0 98%);
+  background:
+    linear-gradient(90deg, rgba(0,0,0,.14), rgba(0,0,0,.02));
+  mix-blend-mode: multiply;
+}
+
+/* Triángulo derecho */
+.fold-right{
+  clip-path: polygon(100% 22%, 50% 60%, 100% 98%);
+  background:
+    linear-gradient(270deg, rgba(0,0,0,.14), rgba(0,0,0,.02));
+  mix-blend-mode: multiply;
+}
+
+/* Línea central (seam) */
+.envelope::after{
+  content:"";
+  position:absolute;
+  left: 50%;
+  top: 28%;
+  width: 2px;
+  height: 72%;
+  transform: translateX(-50%);
+  background: linear-gradient(180deg, rgba(255,255,255,.0), rgba(255,255,255,.35), rgba(255,255,255,.0));
+  opacity: .65;
+  z-index: 4;
+}
+
+/* Solapa superior (la que rota) */
+.flap{
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 62%;
+  z-index: 5;
+
+  clip-path: polygon(0 0, 100% 0, 50% 100%);
+  background:
+    linear-gradient(180deg, #ffd7e3 0%, #ffb6cb 70%, #ff9fbc 100%);
+  transform-origin: top center;
+  transform: perspective(900px) rotateX(var(--flapAngle));
+  backface-visibility: hidden;
+
+  box-shadow:
+    inset 0 -1px 0 rgba(0,0,0,.10),
+    0 10px 20px rgba(0,0,0,.10);
+}
+
+/* Sello */
+.seal{
+  position: absolute;
+  left: 50%;
+  top: 58%;
+  transform: translate(-50%, -50%);
+  width: 56px;
+  height: 56px;
+  border-radius: 999px;
+  background: rgba(255,255,255,.35);
+  backdrop-filter: blur(8px);
+  display: grid;
+  place-items: center;
+  font-size: 22px;
+  z-index: 6;
+  box-shadow: 0 12px 20px rgba(0,0,0,.14);
+}
+
+/* Carta completa */
+.letterSection{
+  position: fixed;
+  left: 50%;
+  top: 10vh;
+  width: min(720px, 92vw);
+
+  opacity: var(--letterOpacity);
+  transform: translateX(-50%) translateY(var(--letterY));
+  filter: blur(var(--letterBlur));
+  transition: opacity .12s linear, filter .12s linear;
+
+  pointer-events: none; /* se activa al final desde JS */
+  z-index: 20;          /* para que se vea seguro por encima */
+}
+
+.letterPaper{
+  border-radius: 18px;
+  padding: 22px 22px 26px;
+  box-shadow: 0 18px 40px rgba(0,0,0,.18);
+  border: 1px solid rgba(255,255,255,.25);
+  max-height: 76vh;
+  overflow: auto;
+
+  /* Textura “papel arrugado” (sin imagen externa) */
+  background:
+    radial-gradient(120px 80px at 20% 30%, rgba(0,0,0,.05) 0%, transparent 60%),
+    radial-gradient(140px 90px at 75% 40%, rgba(0,0,0,.04) 0%, transparent 62%),
+    radial-gradient(160px 110px at 40% 80%, rgba(0,0,0,.045) 0%, transparent 65%),
+    repeating-linear-gradient(0deg, rgba(0,0,0,.02) 0 2px, rgba(0,0,0,0) 2px 7px),
+    linear-gradient(180deg, rgba(255,255,255,.98), rgba(255,255,255,.90));
+}
+
+/* Si quieres una textura real:
+   mete un archivo "paper.jpg" y descomenta esto (y comenta lo de arriba):
+   background: url("paper.jpg") center/cover no-repeat;
+*/
+
+.to{
+  font-size: 12px;
+  opacity: .78;
+  margin-bottom: 6px;
+}
+
+.letterPaper h1{
+  font-family: "Great Vibes", cursive;
+  font-size: 46px;
+  margin: 6px 0 12px;
+  line-height: 1;
+}
+
+.letterPaper p{
+  margin: 10px 0;
+  line-height: 1.55;
+  font-weight: 400;
+}
+
+.letterPaper .big{
+  font-weight: 600;
+  font-size: 18px;
+}
+
+.sign{
+  margin-top: 14px;
+  font-weight: 600;
+  opacity: .88;
+}
+
+.end{
+  margin-top: 28vh;
+  text-align: center;
+  opacity: .8;
+}
+
+/* Reduce motion: dejamos carta visible */
+@media (prefers-reduced-motion: reduce){
+  :root{
+    --flapAngle: -180deg;
+    --envOpacity: 0;
+    --letterOpacity: 1;
+    --letterY: 0px;
+    --letterBlur: 0px;
+    --hintOpacity: 0;
+  }
+  .hint{ display:none; }
+}
+
+/* ============================
+   Collage stickers/fotos
+   ============================ */
+
+.collage{
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 9; /* encima del fondo, debajo de la carta (20) */
+  opacity: var(--collageOpacity);
+  transition: opacity .18s linear;
+}
+
+.collage .sticker{
+  position: absolute;
+  height: auto;
+  user-select: none;
+  -webkit-user-drag: none;
+  filter: drop-shadow(0 14px 22px rgba(0,0,0,.18));
+  will-change: transform, opacity;
+}
+
+/* ============================
+   Tarjeta Spotify
+   ============================ */
+
+.spotifyCard{
+  margin-top: 16px;
+  display: flex;
+  gap: 14px;
+  align-items: center;
+  padding: 12px 14px;
+  border-radius: 16px;
+  text-decoration: none;
+  color: inherit;
+
+  background: rgba(255,255,255,.55);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(0,0,0,.06);
+  box-shadow: 0 12px 24px rgba(0,0,0,.12);
+  transition: transform .12s ease;
+}
+
+.spotifyCover{
+  width: 64px;
+  height: 64px;
+  border-radius: 12px;
+  object-fit: cover;
+  flex: 0 0 auto;
+}
+
+.spotifyMeta{ min-width: 0; }
+.spotifyLabel{
+  font-size: 12px;
+  opacity: .72;
+  margin-bottom: 2px;
+}
+.spotifyTitle{
+  font-weight: 700;
+  line-height: 1.15;
+  margin-bottom: 4px;
+}
+.spotifyCta{
+  font-size: 12px;
+  font-weight: 600;
+  opacity: .75;
+}
+
+.spotifyCard:hover{
+  transform: translateY(-1px);
+}

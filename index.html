@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Para ti 💌</title>
+  <meta name="description" content="Una cartita para ti" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+  <link rel="stylesheet" href="styles.css" />
+</head>
+<body>
+
+  <!-- Collage de stickers/fotos (aparece al revelar la carta) -->
+  <div id="collage" class="collage" aria-hidden="true"></div>
+
+  <main class="scene" id="scene">
+    <div class="hint" id="hint">Desliza para abrir 💌</div>
+
+    <!-- FASE 1: Sobre (sticky) -->
+    <div class="sticky">
+      <div class="stage">
+        <div class="envelopeWrap" id="envelopeWrap">
+          <div class="envelope" aria-label="Sobre">
+            <!-- papel interior solo como “forro” (sin texto) -->
+            <div class="liner" aria-hidden="true"></div>
+
+            <!-- pliegues frontales (3 triángulos realistas) -->
+            <div class="fold fold-bottom" aria-hidden="true"></div>
+            <div class="fold fold-left" aria-hidden="true"></div>
+            <div class="fold fold-right" aria-hidden="true"></div>
+
+            <!-- solapa superior (rota al abrir) -->
+            <div class="flap" aria-hidden="true"></div>
+
+            <!-- sello -->
+            <div class="seal" aria-hidden="true">❤</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- FASE 2: Carta completa (aparece al final) -->
+    <section class="letterSection" id="letterSection" aria-label="Carta">
+      <div class="letterPaper">
+        <div class="to">Para: <span id="toName">Mi monkis 🐵</span> ✨</div>
+        <h1>Feliz San Monkilentín!</h1>
+
+        <p>
+          Te escribo esta carta chulita para decirte lo mucho que te quiero y lo mucho que me hacer feliz.
+          Me alegra mucho pasar otro San Valentín junto a ti, de los muchos que nos quedan. Por más Don sushis juntos 🍣🩷
+        </p>
+
+        <p>
+          Este año es nuestro gran año, japanisu, empezar vida adulta como adultos... Por seguir dando muchos pasitos junto a ti.
+          Con muchos besitos, muchos abrazos, quedarnos dormiditos abrazados, compartir momentos únicos juntos y seguir avanzando
+          como la mejor pareja del mundo.
+        </p>
+
+        <p class="big">
+          Te monki quiero muchísimo. 💖
+        </p>
+
+        <!-- Tarjeta Spotify (pon tu link en href y tu portada en spotify-cover.jpg) -->
+        <a class="spotifyCard"
+           href="PEGA_AQUI_TU_LINK_DE_SPOTIFY"
+           target="_blank"
+           rel="noopener">
+          <img class="spotifyCover" src="spotify-cover.jpg" alt="Portada de la playlist">
+          <div class="spotifyMeta">
+            <div class="spotifyLabel">Spotify playlist</div>
+            <div class="spotifyTitle">All I need to say abaout you</div>
+            <div class="spotifyCta">Abrir en Spotify →</div>
+          </div>
+        </a>
+
+        <div class="sign">Tu monkis 🦧</div>
+      </div>
+    </section>
+
+  </main>
+
+  <script src="script.js"></script>
+</body>
+</html>
